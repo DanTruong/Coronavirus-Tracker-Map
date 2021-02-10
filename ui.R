@@ -27,8 +27,14 @@ ui <- navbarPage("US COVID-19 Cases",
       width = 330,
       height = "auto",
       h2("Data Variables"),
-      selectInput("yearVal", "Year", 2020:2021),
-      selectInput("monthVal", "Months", 1:12)
+      dateRangeInput("dateVal", "Date Range",
+                     min = min(as.Date(covidCases$date, format = "%Y-%m-%d")),
+                     max = max(as.Date(covidCases$date, format = "%Y-%m-%d")),
+                     start  = min(as.Date(covidCases$date, format = "%Y-%m-%d")),
+                     end = min(as.Date(covidCases$date, format = "%Y-%m-%d")) + 365,
+                     format = "mm/dd/yy",
+                     separator = " - "),
+      selectInput("variableVal", "Select Filter", unique(covidCases$variable))
     ),
   )),
 

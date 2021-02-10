@@ -1,0 +1,12 @@
+name: Coronavirus-Tracker-Map
+title: Coronavirus-Tracker-Map
+username:
+account: dantruong
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3607369
+bundleId: 4207345
+url: https://dantruong.shinyapps.io/Coronavirus-Tracker-Map/
+when: 1612990555.37091
+asMultiple: FALSE
+asStatic: FALSE

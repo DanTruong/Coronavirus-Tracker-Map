@@ -5,10 +5,11 @@ library(tidyr)
 library(tidyverse)
 library(httr)
 library(jsonlite)
+library(reshape2)
 
-# Uncomment lines 11-53 to update the COVID-19 dataset
+# Uncomment lines 12-55 to update the COVID-19 dataset
 #
-# ## API Endpoint URL
+## API Endpoint URL
 # path <- "https://data.cdc.gov/resource/9mfq-cb36.json"
 # 
 # ## List of US States with abbreviations and central coordinates
@@ -17,7 +18,8 @@ library(jsonlite)
 # ## Data frame that will hold the daily cases (per state)
 # covidCases <- data.frame(submission_date = character(),
 #                          state = character(),
-#                          cases = character()
+#                          cases = character(),
+#                          deaths = character()
 # )
 # 
 # ## Iterate through the list of US States
@@ -33,7 +35,7 @@ library(jsonlite)
 #   df <- fromJSON(response, flatten = TRUE) %>% data.frame()
 # 
 #   ## Select only date, state and cases
-#   df <- select(df, submission_date, state, cases = tot_cases)
+#   df <- select(df, submission_date, state, cases = new_case, deaths = new_death)
 # 
 #   ## Add State cases to working data frame
 #   covidCases <- rbind(covidCases, df)
@@ -59,20 +61,14 @@ covidCases <- read.csv("data/covidCases.csv")
 covidCases$lat <- as.double(covidCases$lat)
 covidCases$long <- as.double(covidCases$long)
 
-## Convert case variable into integer
-covidCases$cases <- as.integer(covidCases$cases)
-
 ## Remove variable "X"
 covidCases <- subset(covidCases, select = -c(X))
 
-# Separate date into Month, Day and Year (Integer)
-covidCases <- covidCases %>% separate(date, 
-                                      sep = "-", 
-                                      into = c("year", "month", "day"))
-covidCases$month <- as.integer(covidCases$month)
-covidCases$day <- as.integer(covidCases$day)
-covidCases$year <- as.integer(covidCases$year)
+## Turn cases and deaths into rows
+covidCases <- melt(covidCases, 
+                   id.vars = c("state", "date", "full", "lat", "long"))
 
-## Aggregate coronavirus cases by sum of cases
-covidCasesCons <- covidCases[-c(5)]
-covidCasesCons <- aggregate(cases ~ ., covidCasesCons, sum)
+## Convert cases and deaths variable into integer
+covidCases$value <- as.integer(covidCases$value)
+
+

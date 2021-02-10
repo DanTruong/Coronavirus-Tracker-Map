@@ -20,30 +20,32 @@ server <- function(input, output, session) {
 
       # Draw circles to represent cases
       addCircles(
-        data = covidCasesCons[
-          covidCasesCons$year == as.integer(input$yearVal) &
-          covidCasesCons$month == as.integer(input$monthVal),
-        ],
+        data = aggregate(value ~ state + full + lat + long + variable,
+                         covidCases[covidCases$date >= as.Date(input$dateVal[1], format = "%Y-%m-%d") 
+                                    & covidCases$date <= as.Date(input$dateVal[2], format = "%Y-%m-%d")
+                                    & covidCases$variable == input$variableVal, ], sum),
         lat = ~lat,
         lng = ~long,
-        radius = ~ cases / 50,
+        radius = ~ value,
         color = 'red',
         popup = ~ as.character(paste0(
           full,
           ": ",
-          cases,
-          " Active Cases"
+          value,
+          " ",
+          variable
         )),
         label = ~ as.character(paste0(
           full,
           ": ",
-          cases, 
-          " Active Cases"
+          value,
+          " ",
+          variable
         ))
       )
   })
 
   # Define table to include consolidated dataset
-  output$incTable <- DT::renderDataTable(covidCasesCons)
+  output$incTable <- DT::renderDataTable(covidCases)
 }
 
